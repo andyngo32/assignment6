@@ -2,6 +2,8 @@ from travelToolbox import readItems, readTransactions
 import tkinter as tk
 from tkinter import Text, END
 
+import pprint
+
 class myApp(tk.Tk):
     def __init__(self, itemRecords) :
         tk.Tk.__init__(self)
@@ -9,7 +11,7 @@ class myApp(tk.Tk):
 
         self.grid()
 
-        self.entry = tk.Entry(self)
+        self.entry = tk.Entry(self, state=tk.NORMAL)
         self.entry.grid(column=1,row=0)
 
         button1 = tk.Button(self,text="Show",
@@ -24,20 +26,25 @@ class myApp(tk.Tk):
         label.grid(column=0,row=0)
 
     def showStockItem(self):
-        self.clear()
-        content = self.entry.get()
-        print(content)
-        IDLabel = tk.Label(self, anchor="w", text='ID', font = "Calibri 14 bold")
-        IDLabel.grid(column=0,row=0)
-        NameLabel = tk.Label(self, anchor="w", text='Name', font = "Calibri 14 bold")
-        NameLabel.grid(column=0,row=1)
-        StartLabel = tk.Label(self, anchor="w", text='Start', font = "Calibri 14 bold")
-        StartLabel.grid(column=0,row=2)
-        EndLabel = tk.Label(self, anchor="w", text='End', font = "Calibri 14 bold")
-        EndLabel.grid(column=0,row=3)
-        # self.T = Text(self, height=4, width=50)
-        # self.T.grid(column=0,row=2)
-        # self.T.insert(END, "hello")
+        entryText = self.entry.get()
+
+        if len(entryText) == 0:
+            print("ItemID cannot be empty.")
+            self.quitit()
+            return
+        elif str(entryText) not in self.itemRecords.keys():
+            print("ItemID {} does not exist. Please enter a valid ItemID.".format(entryText))
+            self.quitit()
+            return
+        else:
+            self.clear()
+            record = self.itemRecords[str(entryText)]
+
+            self.T = Text(self, height=10, width=40)
+            self.T.pack()
+            self.T.insert(END, "ID\t{}\nName\t{}\nStart\t{}\nEnd\t{}\n".format(record.itemID,
+                          record.itemName, record.getAvailableStart(), record.getAvailableEnd()))
+
         return
 
     def clear(self):
